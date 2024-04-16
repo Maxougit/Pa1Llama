@@ -38,12 +38,28 @@ def load_and_index_pdfs(pdf_files):
                 embedding = response["embedding"]
                 collection.add(ids=[pdf_file], embeddings=[embedding], documents=[chunk])
 
-def retrieve_documents(prompt, n_results=3):
+def retrieve_documents(prompt, n_results=3, threshold_ratio=1.2, threshold_limit=290):
     response = ollama.embeddings(model="mxbai-embed-large", prompt=prompt)
     query_embedding = response["embedding"]
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
-    # print(results)
-    return results['documents']
+
+    print(results["documents"])
+    print(results["distances"])
+    
+    # Obtenir la distance du premier document
+    first_distance = results['distances'][0][0]
+    
+    # Filtrer les résultats pour garder ceux dont la distance est proche du premier
+    filtered_documents = []
+    for idx, distance in enumerate(results['distances'][0]):
+        if distance > threshold_limit:
+            break
+        if distance <= first_distance * threshold_ratio:
+            filtered_documents.append(results['documents'][0][idx])
+    
+    print(filtered_documents)
+    # return filtered_documents
+    return []
 
 def main():
     folder_path = "Files"
@@ -66,7 +82,7 @@ def main():
             print("\nRéponse :", response['response'])
         else:
             print("\nNo relevant document initially found.")
-            response = ollama.generate(model="mistral", prompt=prompt, stream=True)
+            response = ollama.generate(model="mistral", prompt=prompt)
             print("\nRéponse :", response['response'])
         print("\n")
 
