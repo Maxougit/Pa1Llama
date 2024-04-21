@@ -4,6 +4,7 @@ import chromadb
 from PyPDF2 import PdfReader
 import os
 import ollama
+import hashlib
 
 app = Flask(__name__)
 CORS(app)
@@ -12,9 +13,13 @@ CORS(app)
 chroma_client = chromadb.Client()
 
 try:
+    print("Creating collection")
     collection = chroma_client.create_collection(name="pdf_docs")
+    print("Collection created.")
 except chromadb.exceptions.UniqueConstraintError:
+    chroma_client.delete_collection(name="pdf_docs")
     collection = chroma_client.get_collection(name="pdf_docs")
+    print("Collection deleted and recreated.")
 
 def clean_text(text):
     """Remove unnecessary characters and normalize whitespaces."""
@@ -25,6 +30,9 @@ def chunk_text(text, chunk_size=500):
     words = text.split()
     for i in range(0, len(words), chunk_size):
         yield ' '.join(words[i:i+chunk_size])
+
+def hash_chunk(text):
+    return str(hashlib.md5(text.encode()).hexdigest())
 
 def load_and_index_pdfs(pdf_files):
     for pdf_file in pdf_files:
@@ -41,7 +49,7 @@ def load_and_index_pdfs(pdf_files):
             for chunk in chunk_text(full_text):
                 response = ollama.embeddings(model="mxbai-embed-large", prompt=chunk)
                 embedding = response["embedding"]
-                collection.add(ids=[pdf_file], embeddings=[embedding], documents=[chunk])
+                collection.add(ids=[pdf_file + hash_chunk(chunk)], embeddings=[embedding], documents=[chunk])
 
 def retrieve_documents(prompt, n_results=3, threshold_ratio=1.2, threshold_limit=290):
     response = ollama.embeddings(model="mxbai-embed-large", prompt=prompt)
@@ -81,5 +89,4 @@ def api_retrieve_documents():
 if __name__ == '__main__':
     main()
     app.run(debug=True)
-
     
