@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import chromadb
 from PyPDF2 import PdfReader
 import os
 import ollama
 
 app = Flask(__name__)
+CORS(app)
 
 # Initialize the ChromaDB client
 chroma_client = chromadb.Client()

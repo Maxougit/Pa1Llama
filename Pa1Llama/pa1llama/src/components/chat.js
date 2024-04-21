@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -9,48 +10,62 @@ const Chat = () => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const fetchChatCompletion = async (userInput) => {
-    const ongoingMessageId = Date.now();
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { role: "assistant", content: "", id: ongoingMessageId },
-    ]);
-
-    const data = JSON.stringify({
-      model: "mistral",
-      messages: [...messages, { role: "user", content: userInput }],
-      stream: true,
-    });
-
+  const retrieveAndSendToLLM = async (userInput) => {
     try {
-      const response = await fetch(`${process.env.API_URL}chat`, {
+      // Récupération du contexte
+      const response = await axios.post(
+        `${process.env.RAG_URL}/retrieve`,
+        { prompt: userInput },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      const contextDocuments = response.data.documents; // Sauvegarde du contexte récupéré
+
+      // Préparation du message avec le contexte inclus
+      const ongoingMessageId = Date.now();
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "", id: ongoingMessageId },
+      ]);
+
+      // Création du payload pour le LLM
+      const payload = {
+        model: "mistral",
+        messages: [
+          ...messages,
+          {
+            role: "user",
+            content:
+              "Respond to this prompt:" +
+              userInput +
+              " Using this data:" +
+              contextDocuments.join(" "),
+          },
+        ],
+        stream: true,
+      };
+
+      // Envoi au LLM
+      const llmResponse = await fetch(`${process.env.API_URL}chat`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: data,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      const reader = response.body.getReader();
-
+      // Traitement de la réponse du LLM
+      const reader = llmResponse.body.getReader();
       const read = async () => {
         const { done, value } = await reader.read();
         if (done) return;
         const chunk = new TextDecoder("utf-8").decode(value);
-
         try {
           const json = JSON.parse(chunk);
-          if (!json.done) {
-            // Update the ongoing message content with the new chunk
-            setMessages((prevMessages) =>
-              prevMessages.map((msg) =>
-                msg.id === ongoingMessageId
-                  ? { ...msg, content: msg.content + json.message.content }
-                  : msg
-              )
-            );
-          }
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === ongoingMessageId
+                ? { ...msg, content: msg.content + json.message.content }
+                : msg
+            )
+          );
         } catch (error) {
           console.error("Chunk parsing error:", error);
         }
@@ -59,11 +74,14 @@ const Chat = () => {
 
       read();
     } catch (error) {
-      console.error("Failed to fetch data:", error);
+      console.error("Error in fetch sequence:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Failed to interact with LLM." },
+      ]);
     }
   };
 
-  // Handle input submission
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!inputText.trim()) return;
@@ -71,7 +89,7 @@ const Chat = () => {
       ...prevMessages,
       { role: "user", content: inputText },
     ]);
-    fetchChatCompletion(inputText);
+    retrieveAndSendToLLM(inputText);
     setInputText("");
   };
 
