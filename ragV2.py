@@ -23,9 +23,11 @@ def chunk_text(text, chunk_size=1000):
         yield ' '.join(words[i:i+chunk_size])
 
 def hash_chunk(text):
+    """Generate a hash for each text chunk."""
     return str(hashlib.md5(text.encode()).hexdigest())
 
 def load_and_index_pdfs(pdf_files):
+    """Load PDFs, extract text, split into chunks, and index them."""
     for pdf_file in pdf_files:
         reader = PdfReader(pdf_file)
         full_text = ""
@@ -36,35 +38,24 @@ def load_and_index_pdfs(pdf_files):
         full_text = clean_text(full_text)
 
         if full_text:
-            # Generate chunks of text and index each chunk
             for chunk in chunk_text(full_text):
                 response = ollama.embeddings(model="snowflake-arctic-embed", prompt=chunk)
                 embedding = response["embedding"]
                 document_id = pdf_file + hash_chunk(chunk)
                 collection.add(ids=[document_id], embeddings=[embedding], documents=[chunk])
 
-def retrieve_documents(prompt, n_results=3, threshold_ratio=1.2, threshold_limit=290):
+def retrieve_documents(prompt, n_results=5, threshold_ratio=1.15):
+    """Retrieve the most relevant documents based on the prompt."""
     response = ollama.embeddings(model="snowflake-arctic-embed", prompt=prompt)
     query_embedding = response["embedding"]
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
 
-    print(results["documents"])
-    print(results["distances"])
-    
-    # Obtenir la distance du premier document
+    # Using cosine similarity to rank and filter documents
     first_distance = results['distances'][0][0]
-    
-    # Filtrer les résultats pour garder ceux dont la distance est proche du premier
-    filtered_documents = []
-    for idx, distance in enumerate(results['distances'][0]):
-        if distance > threshold_limit:
-            break
-        if distance <= first_distance * threshold_ratio:
-            filtered_documents.append(results['documents'][0][idx])
-    
-    print(filtered_documents)
-    # return filtered_documents
-    return []
+    filtered_documents = [doc for idx, doc in enumerate(results['documents'][0])
+                          if results['distances'][0][idx] <= first_distance * threshold_ratio]
+
+    return filtered_documents
 
 def main():
     folder_path = "Files"
@@ -81,16 +72,10 @@ def main():
         if prompt.lower() == 'exit':
             break
         relevant_docs = retrieve_documents(prompt)
-        print(relevant_docs)
-        # if relevant_docs:
-        #     context = relevant_docs[0]
-        #     response = ollama.generate(model="mistral", prompt=f"Using this data: {context} \n\n Respond to this prompt: {prompt}")
-        #     print("\nRéponse :", response['response'])
-        # else:
-        #     print("\nNo relevant document initially found.")
-        #     response = ollama.generate(model="mistral", prompt=prompt)
-        #     print("\nRéponse :", response['response'])
-        # print("\n")
+        if relevant_docs:
+            print("Documents pertinents trouvés:", relevant_docs)
+        else:
+            print("Aucun document pertinent trouvé.")
 
 if __name__ == "__main__":
     main()

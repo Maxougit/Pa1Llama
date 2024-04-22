@@ -66,12 +66,12 @@ def load_and_index_pdfs(pdf_files):
                 full_text += page_text + " "
         full_text = clean_text(full_text)
         for chunk in chunk_text(full_text):
-            response = ollama.embeddings(model="mxbai-embed-large", prompt=chunk)
+            response = ollama.embeddings(model="snowflake-arctic-embed", prompt=chunk)
             embedding = response["embedding"]
             collection.add(ids=[pdf_file + hash_chunk(chunk)], embeddings=[embedding], documents=[chunk])
 
-def retrieve_documents(prompt, n_results=3, threshold_ratio=1.2, threshold_limit=290):
-    response = ollama.embeddings(model="mxbai-embed-large", prompt=prompt)
+def retrieve_documents(prompt, n_results=3, threshold_ratio=1.25, threshold_limit=380):
+    response = ollama.embeddings(model="snowflake-arctic-embed", prompt=prompt)
     query_embedding = response["embedding"]
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
     first_distance = results['distances'][0][0]

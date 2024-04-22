@@ -13,7 +13,7 @@ export default function Login({ onLogin }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${process.env.RAG_URL}/login`, {
+      const response = await axios.post(`${process.env.RAG_URL}login`, {
         username,
         password,
       });
