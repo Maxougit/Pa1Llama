@@ -44,7 +44,7 @@ const Chat = () => {
             content:
               "Respond to this prompt:" +
               userInput +
-              " Using this data:" +
+              " There is possible usable context, this data can help you:" +
               contextDocuments.join(" "),
           },
         ],
@@ -109,14 +109,19 @@ const Chat = () => {
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`message p-2 my-1 rounded-lg text-white ${
-              message.role === "user"
-                ? "bg-blue-500 ml-auto"
-                : "bg-gray-500 mr-auto"
+            className={`chat ${
+              message.role === "user" ? "chat-end" : "chat-start"
             }`}
-            style={{ maxWidth: "80%", wordWrap: "break-word" }}
           >
-            {message.content}
+            <div
+              className={`chat ${
+                message.role === "user"
+                  ? "chat-bubble chat-bubble-primary"
+                  : "chat-bubble chat-bubble-secondary"
+              }`}
+            >
+              {message.content}
+            </div>
           </div>
         ))}
         <div ref={endOfMessagesRef} />
