@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -12,12 +13,18 @@ const Chat = () => {
 
   const retrieveAndSendToLLM = async (userInput) => {
     try {
-      // Récupération du contexte
+      // Attach JWT token to request headers
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      };
+
       const response = await axios.post(
         `${process.env.RAG_URL}/retrieve`,
         { prompt: userInput },
-        { headers: { "Content-Type": "application/json" } }
+        { headers: headers }
       );
+
       const contextDocuments = response.data.documents; // Sauvegarde du contexte récupéré
 
       // Préparation du message avec le contexte inclus
@@ -77,7 +84,10 @@ const Chat = () => {
       console.error("Error in fetch sequence:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Failed to interact with LLM." },
+        {
+          role: "assistant",
+          content: "Failed to interact with LLM. " + error.code,
+        },
       ]);
     }
   };
