@@ -1,14 +1,34 @@
 // components/Login.js
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
 export default function Login({ onLogin }) {
-  Cookies.remove("authToken");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = Cookies.get("authToken");
+      if (token) {
+        try {
+          await axios.get(`${process.env.RAG_URL}validate-token`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          onLogin(true);
+        } catch (error) {
+          console.error("Token validation error:", error);
+          Cookies.remove("authToken"); // Remove invalid token
+        }
+      }
+    };
+
+    checkAuth();
+  }, [onLogin]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,7 +37,7 @@ export default function Login({ onLogin }) {
         username,
         password,
       });
-      Cookies.set("authToken", response.data.access_token, { expires: 1 });
+      Cookies.set("authToken", response.data.access_token, { expires: 1 }); // Set cookie for 1 day
       onLogin(true);
     } catch (error) {
       const message =
