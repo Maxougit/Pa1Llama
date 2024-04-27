@@ -74,11 +74,19 @@ ollama pull snowflake-arctic-embed
    npm install
    ```
 
-### Ajuster les variables d'environnement
+### Ajuster les variables d'environnement pour le backend
 
+.env
 ```bash
 OLLAMA_HOST = 'http://localhost:11434'
 MODE = 'dev'
+```
+
+### Ajuster les variables d'environnement pour le frontend
+.env.local
+```bash
+API_URL=http://localhost:11434/api/
+RAG_URL=http://127.0.0.1:5001/
 ```
 
 ### Démarrer l'application
