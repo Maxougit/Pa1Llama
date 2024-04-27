@@ -105,9 +105,9 @@ _Le mot de passe par défaut est **admin**:**admin**_
 
 ## Architecture de l'application
 
-[Diagramme de structure](p1.png)
+![Diagramme de structure](p1.png)
 
-[Diagramme de séquence](p2.png)
+![Diagramme de séquence](p2.png)
 
 # ------------------------------
 
