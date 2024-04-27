@@ -7,11 +7,18 @@ import chromadb
 from PyPDF2 import PdfReader
 import os
 import hashlib
-import ollama
 from cryptography.fernet import Fernet
 import base64
+import ollama
+from ollama import Client
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = Client(host=os.getenv('CHROMA_HOST'))
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = '/app/files' if os.getenv('MODE') == 'prod' else './files'
 CORS(app, resources={r"/*": {"origins": "*"}})  # Adjust in production
 
 # Generate a secure random secret key for JWT
@@ -42,9 +49,9 @@ def login():
         print(f"Attempting to create collection for user: {username}")
         collection = chroma_client.create_collection(name=collection_name)
         print("Collection created.")
-    except chromadb.exceptions.UniqueConstraintError:
+    except chromadb.UniqueConstraintError:  # Utilisez le bon chemin d'import si nécessaire
+        print(f"Collection {collection_name} already exists.")
         collection = chroma_client.get_collection(name=collection_name)
-        print(f"Collection for {username} already exists.")
 
     # Stocker la référence de la collection dans une sorte de store global ou de contexte
     app.config[f"{username}_collection"] = collection
@@ -95,14 +102,14 @@ def load_and_index_pdfs(pdf_files, username, key):
                 full_text += page_text + " "
         full_text = clean_text(full_text)
         for chunk in chunk_text(full_text):
-            response = ollama.embeddings(model="snowflake-arctic-embed", prompt=chunk)
+            response = client.embeddings(model="snowflake-arctic-embed", prompt=chunk)
             embedding = response["embedding"]
             collection.add(ids=[pdf_file + hash_chunk(chunk)], embeddings=[embedding], documents=[encrypt_text(chunk, key)])
 
 
 def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, threshold_limit=380):
     collection = app.config[f"{username}_collection"]  # Access the correct collection
-    response = ollama.embeddings(model="snowflake-arctic-embed", prompt=prompt)
+    response = client.embeddings(model="snowflake-arctic-embed", prompt=prompt)
     query_embedding = response["embedding"]
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
     
@@ -150,9 +157,11 @@ def upload_file():
     claims = get_jwt()
     user_key = claims['user_key'].encode('utf-8')
     
+    # app.logger.info(f"Uploading file for user: {username}, with key: {user_key}")
+
     file = request.files['file']
     filename = file.filename
-    file_path = os.path.join("Files", filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(file_path)
     
     load_and_index_pdfs([file_path], username, user_key)
@@ -179,4 +188,4 @@ def validate_token():
     return jsonify({'is_valid': True, 'user': current_user}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
