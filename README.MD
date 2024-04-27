@@ -9,7 +9,7 @@ L'objectif de ce projet est de développer une solution d'intelligence artificie
 
 Afin de receuillir les avis en terme de performance de cette application, un sondage est disponible à l'adresse suivante : **https://docs.google.com/forms/d/e/1FAIpQLScWba9o3XuoVAnvXRApRKBN7I7vlDXx9cmROKVGilfSAjF68w/viewform?usp=sf_link**
 
-_note : Ce projet ce base sur llama3 et snowflake-arctic-embed, le tout en local sans aucune requete à internet_
+_note : Ce projet se base sur llama3 et snowflake-arctic-embed, le tout en local sans aucune requete à internet_
 _Pour des performances optimal il est conseillé d'utiliser un ordinateur avec au moins 16go de ram (environ 8go de libre)_
 
 ## Prérequis
