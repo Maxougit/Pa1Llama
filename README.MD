@@ -61,7 +61,7 @@ MODE = 'dev'
    ```bash
    cd POC_ADS
    source venv/bin/activate # ou venv\Scripts\activate
-   python app.py
+   python main.py
    ```
 
 2. **Démarrer le frontend :**
