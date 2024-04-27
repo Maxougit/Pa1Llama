@@ -20,7 +20,34 @@ Avant de démarrer, assurez-vous d'avoir installé les logiciels suivants :
 - Node.js 18.x ou plus récent (_pour le mode developpment_)
 - Ollama (*https://ollama.com/*) (_pour le mode developpment et production_)
 - Docker (_pour le mode production_)
+- Microsoft C++ tools (_pour le mode developpment sur windows_)
 
+## Installation de l'application en mode **production**
+
+### Installation des modèles d'IA
+
+```bash
+ollama pull llama3
+ollama pull snowflake-arctic-embed
+```
+
+1. **Cloner le dépôt :**
+   ```bash
+   git clone https://github.com/Maxougit/POC_ADS.git
+   ```
+2. **Lancer le conteneur Docker :**
+   ```bash
+   cd POC_ADS
+   docker-compose up --build
+   ```
+3. **Accéder à l'application :**
+   ```bash
+    http://localhost:3000
+   ```
+_Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
+_login:mdp **admin**:**admin**_
+
+# ------------------------------
 ## Installation de l'application en mode **developpement**
 
 ### Installation des modèles d'IA
@@ -37,8 +64,8 @@ ollama pull snowflake-arctic-embed
 2. **Installer les dépendances pour le backend :**
    ```bash
    cd POC_ADS
-   python3 -m venv venv
-   source venv/bin/activate # ou venv\Scripts\activate
+   python3 -m venv venv ou python -m venv venv
+   source venv/bin/activate # ou .\venv\Scripts\activate.bat
    pip install -r requirements.txt
    ```
 3. **Installer les dépendances pour le frontend :**
@@ -74,33 +101,8 @@ MODE = 'dev'
     http://localhost:3000
    ```
 
-# ------------------------------
-
-## Installation de l'application en mode **production**
-
-### Installation des modèles d'IA
-
-```bash
-ollama pull llama3
-ollama pull snowflake-arctic-embed
-```
-
-1. **Cloner le dépôt :**
-   ```bash
-   git clone https://github.com/Maxougit/POC_ADS.git
-   ```
-2. **Lancer le conteneur Docker :**
-   ```bash
-   cd POC_ADS
-   docker-compose up --build
-   ```
-3. **Accéder à l'application :**
-   ```bash
-    http://localhost:3000
-   ```
-
 _Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
-_Le mot de passe par défaut est **admin**:**admin**_
+_login:mdp **admin**:**admin**_
 
 # ------------------------------
 
