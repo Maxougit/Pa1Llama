@@ -20,6 +20,7 @@ Avant de démarrer, assurez-vous d'avoir installé les logiciels suivants :
 - Node.js 18.x ou plus récent (_pour le mode developpment_)
 - Ollama (*https://ollama.com/*) (_pour le mode developpment et production_)
 - Docker (_pour le mode production_)
+- Microsoft C++ tools (_pour le mode developpment sur windows_)
 
 ## Installation de l'application en mode **developpement**
 
@@ -37,8 +38,8 @@ ollama pull snowflake-arctic-embed
 2. **Installer les dépendances pour le backend :**
    ```bash
    cd POC_ADS
-   python3 -m venv venv
-   source venv/bin/activate # ou venv\Scripts\activate
+   python3 -m venv venv ou python -m venv venv
+   source venv/bin/activate # ou .\venv\Scripts\activate.bat
    pip install -r requirements.txt
    ```
 3. **Installer les dépendances pour le frontend :**
