@@ -1,5 +1,16 @@
 # Pa1Llama
 
+Ce projet est un _proof of concept_ dans le cadre de la rédaction du rapport **Grands modèles de langages locaux pour la Confidentialité des Données dans les Applications Personnelles et Professionnelles**. Un rapport Application de la Démarche Scientifique (ADS) dans le cadre de mes études à CESI un rapport sera joint _ici_ après ca finalisation.
+
+L'objectif de ce projet est de développer une solution d'intelligence artificielle open-source, à la fois modulable, flexible, et transparente. Ce projet vise à démocratiser l'accès aux technologies d'IA modernes, en garantissant leur gratuité théorique mais surtout en assurant une confidentialité, une sécurité et une accessibilité optimales.
+
+## Sondage
+
+Afin de receuillir les avis en terme de performance de cette application, un sondage est disponible à l'adresse suivante :
+
+_note : Ce projet ce base sur llama3 et snowflake-arctic-embed, le tout en local sans aucune requete à internet_
+_Pour des performances optimal il est conseillé d'utiliser un ordinateur avec au moins 16go de ram (environ 8go de libre)_
+
 ## Prérequis
 
 Avant de démarrer, assurez-vous d'avoir installé les logiciels suivants :
@@ -87,4 +98,26 @@ ollama pull snowflake-arctic-embed
     http://localhost:3000
    ```
 
-_Note : Ajuster les varibles d'environnement au besoin dans le fichier **.env**_
+_Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
+_Le mot de passe par défaut est **admin**:**admin**_
+
+# ------------------------------
+
+## Architecture de l'application
+
+[Diagramme de structure](p1.png)
+
+[Diagramme de séquence](p2.png)
+
+# ------------------------------
+
+## Auteurs
+
+@Maxougit
+
+## Sources
+
+- https://ollama.com/
+- https://www.trychroma.com/
+- https://www.snowflake.com/
+- https://ai.meta.com/blog/meta-llama-3/
