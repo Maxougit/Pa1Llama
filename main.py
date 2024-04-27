@@ -1,6 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from flask_jwt_extended.exceptions import NoAuthorizationError
 import secrets
 import chromadb
@@ -8,6 +8,9 @@ from PyPDF2 import PdfReader
 import os
 import hashlib
 import ollama
+from flask import g
+from cryptography.fernet import Fernet
+import base64
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Adjust in production
@@ -47,8 +50,29 @@ def login():
     # Stocker la référence de la collection dans une sorte de store global ou de contexte
     app.config[f"{username}_collection"] = collection
 
-    access_token = create_access_token(identity=username)
+    user_specific_data = f"{username}{app.config['JWT_SECRET_KEY']}"
+    key = base64.urlsafe_b64encode(hashlib.sha256(user_specific_data.encode()).digest())
+    
+    additional_claims = {"user_key": key.decode('utf-8')}
+    access_token = create_access_token(identity=username, additional_claims=additional_claims)
+    
     return jsonify(access_token=access_token)
+
+def encrypt_text(plain_text, key):
+    """Chiffre le texte en clair avec la clé de l'utilisateur courant et encode le résultat en base64."""
+    cipher_suite = Fernet(key)
+    encrypted_text = cipher_suite.encrypt(plain_text.encode('utf-8'))
+    base64_encoded = base64.urlsafe_b64encode(encrypted_text).decode('utf-8')
+    return base64_encoded
+
+
+def decrypt_text(encrypted_text, key):
+    """Déchiffre le texte avec la clé de l'utilisateur courant après avoir décodé de base64."""
+    cipher_suite = Fernet(key)
+    base64_decoded = base64.urlsafe_b64decode(encrypted_text)
+    decrypted_text = cipher_suite.decrypt(base64_decoded).decode('utf-8')
+    return decrypted_text
+
 
 def clean_text(text):
     return ' '.join(text.split())
@@ -61,7 +85,7 @@ def chunk_text(text, chunk_size=500):
 def hash_chunk(text):
     return str(hashlib.md5(text.encode()).hexdigest())
 
-def load_and_index_pdfs(pdf_files, username):
+def load_and_index_pdfs(pdf_files, username, key):
     collection = app.config[f"{username}_collection"]
     for pdf_file in pdf_files:
         reader = PdfReader(pdf_file)
@@ -74,7 +98,7 @@ def load_and_index_pdfs(pdf_files, username):
         for chunk in chunk_text(full_text):
             response = ollama.embeddings(model="snowflake-arctic-embed", prompt=chunk)
             embedding = response["embedding"]
-            collection.add(ids=[pdf_file + hash_chunk(chunk)], embeddings=[embedding], documents=[chunk])
+            collection.add(ids=[pdf_file + hash_chunk(chunk)], embeddings=[embedding], documents=[encrypt_text(chunk, key)])
 
 
 def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, threshold_limit=380):
@@ -86,6 +110,11 @@ def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, thre
     # Check if the results list is empty
     if not results['distances']:
         return []  # Return an empty list if no documents are found
+    
+    print(results)
+    
+    claims = get_jwt()
+    user_key = claims['user_key'].encode('utf-8')
 
     first_distance = results['distances'][0][0] if results['distances'][0] else float('inf')
     
@@ -95,10 +124,17 @@ def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, thre
             if distance > threshold_limit:
                 break
             if distance <= first_distance * threshold_ratio:
-                filtered_documents.append(results['documents'][0][idx])
+                encrypted_doc = results['documents'][0][idx]
+                try:
+                    decrypted_text = decrypt_text(encrypted_doc, user_key)
+                    filtered_documents.append(decrypted_text)
+                except Exception as e:
+                    print(f"Erreur de déchiffrement: {e}")
+                    continue
+
+    print(filtered_documents)
 
     return filtered_documents
-
 
 
 @app.route('/retrieve', methods=['POST'])
@@ -115,17 +151,18 @@ def api_retrieve_documents():
 @app.route('/upload', methods=['POST'])
 @jwt_required()
 def upload_file():
-    username = get_jwt_identity()  # Récupérer le nom d'utilisateur à partir du JWT
+    username = get_jwt_identity()
+    claims = get_jwt()
+    user_key = claims['user_key'].encode('utf-8')
+    
     file = request.files['file']
     filename = file.filename
     file_path = os.path.join("Files", filename)
     file.save(file_path)
     
-    # Charger le fichier dans la collection de l'utilisateur
-    load_and_index_pdfs([file_path], username)
-    
-    # Suppression du fichier après indexation
+    load_and_index_pdfs([file_path], username, user_key)
     os.remove(file_path)
+    
     return jsonify({'message': 'File uploaded successfully'})
 
 

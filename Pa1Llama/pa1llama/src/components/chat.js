@@ -20,7 +20,7 @@ const Chat = () => {
       };
 
       const response = await axios.post(
-        `${process.env.RAG_URL}/retrieve`,
+        `${process.env.RAG_URL}retrieve`,
         { prompt: userInput },
         { headers: headers }
       );
@@ -36,16 +36,18 @@ const Chat = () => {
 
       // Création du payload pour le LLM
       const payload = {
-        model: "mistral",
+        model: "llama3",
         messages: [
           ...messages,
           {
             role: "user",
             content:
-              "Respond to this prompt:" +
+              "Répond à ce message:" +
               userInput +
-              " There is possible usable context, this data can help you:" +
-              contextDocuments.join(" "),
+              (contextDocuments.length > 0
+                ? "Voici un peu de contexte suplémentaire:" +
+                  contextDocuments.join(" ")
+                : ""),
           },
         ],
         stream: true,
