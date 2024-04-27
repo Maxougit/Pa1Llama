@@ -1,0 +1,18 @@
+# Utiliser une image de base Node.js
+FROM node:18-alpine
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers package.json et package-lock.json et installer les dépendances
+COPY Pa1Llama/pa1llama/package.json Pa1Llama/pa1llama/package-lock.json ./
+RUN npm install
+
+# Copier les fichiers source du projet Next.js
+COPY Pa1Llama/pa1llama/ ./
+
+# Construire l'application
+RUN npm run build
+
+# Commande pour démarrer Next.js
+CMD ["npm", "run", "start"]
