@@ -86,3 +86,5 @@ ollama pull snowflake-arctic-embed
    ```bash
     http://localhost:3000
    ```
+
+_Note : Ajuster les varibles d'environnement au besoin dans le fichier **.env**_
