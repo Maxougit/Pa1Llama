@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, verify_jwt_in_request, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended.exceptions import NoAuthorizationError
 import secrets
 import chromadb
@@ -10,7 +10,7 @@ import hashlib
 import ollama
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for simplicity, adjust in production
+CORS(app, resources={r"/*": {"origins": "*"}})  # Adjust in production
 
 # Generate a secure random secret key for JWT
 app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
