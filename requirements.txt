@@ -2,3 +2,4 @@ Flask
 chromadb
 PyPDF2
 cryptography
+ollama
