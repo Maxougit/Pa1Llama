@@ -45,7 +45,7 @@ ollama pull snowflake-arctic-embed
     http://localhost:3000
    ```
 _Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
-_Le mot de passe par défaut est **admin**:**admin**_
+_login:mdp **admin**:**admin**_
 
 # ------------------------------
 ## Installation de l'application en mode **developpement**
@@ -102,7 +102,7 @@ MODE = 'dev'
    ```
 
 _Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
-_Le mot de passe par défaut est **admin**:**admin**_
+_login:mdp **admin**:**admin**_
 
 # ------------------------------
 
