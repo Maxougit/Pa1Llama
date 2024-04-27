@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from flask_jwt_extended.exceptions import NoAuthorizationError
@@ -8,7 +8,6 @@ from PyPDF2 import PdfReader
 import os
 import hashlib
 import ollama
-from flask import g
 from cryptography.fernet import Fernet
 import base64
 
@@ -110,9 +109,7 @@ def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, thre
     # Check if the results list is empty
     if not results['distances']:
         return []  # Return an empty list if no documents are found
-    
-    print(results)
-    
+        
     claims = get_jwt()
     user_key = claims['user_key'].encode('utf-8')
 
@@ -131,8 +128,6 @@ def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, thre
                 except Exception as e:
                     print(f"Erreur de déchiffrement: {e}")
                     continue
-
-    print(filtered_documents)
 
     return filtered_documents
 
