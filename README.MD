@@ -1,6 +1,6 @@
 # Pa1Llama
 
-Ce projet est un _proof of concept_ dans le cadre de la rédaction du rapport **"Grands modèles de langages locaux pour la Confidentialité des Données dans les Applications Personnelles et Professionnelles"**. Un rapport qui s'inscrit dans l'Application de la Démarche Scientifique (ADS) dans le cadre de mes études à CESI.
+Ce projet est un _proof of concept_ dans le cadre de la rédaction du rapport **"Grands modèles de langages locaux pour la Confidentialité des Données dans les Applications Personnelles et Professionnelles"**. Un rapport qui s'inscrit pour l'Application de la Démarche Scientifique (ADS) dans le cadre de mes études à CESI.
 Le rapport sera joint _ici_ après sa finalisation.
 
 L'objectif de ce projet est de développer une solution d'intelligence artificielle open-source, à la fois modulable, flexible, et transparente. Ce projet vise à démocratiser l'accès aux technologies d'IA modernes, en garantissant leur gratuité théorique mais surtout en assurant une confidentialité, une sécurité et une accessibilité optimales.
