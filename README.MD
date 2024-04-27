@@ -22,6 +22,32 @@ Avant de démarrer, assurez-vous d'avoir installé les logiciels suivants :
 - Docker (_pour le mode production_)
 - Microsoft C++ tools (_pour le mode developpment sur windows_)
 
+## Installation de l'application en mode **production**
+
+### Installation des modèles d'IA
+
+```bash
+ollama pull llama3
+ollama pull snowflake-arctic-embed
+```
+
+1. **Cloner le dépôt :**
+   ```bash
+   git clone https://github.com/Maxougit/POC_ADS.git
+   ```
+2. **Lancer le conteneur Docker :**
+   ```bash
+   cd POC_ADS
+   docker-compose up --build
+   ```
+3. **Accéder à l'application :**
+   ```bash
+    http://localhost:3000
+   ```
+_Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
+_Le mot de passe par défaut est **admin**:**admin**_
+
+# ------------------------------
 ## Installation de l'application en mode **developpement**
 
 ### Installation des modèles d'IA
@@ -69,31 +95,6 @@ MODE = 'dev'
    ```bash
     cd Pa1Llama/pa1llama
     npm run dev
-   ```
-3. **Accéder à l'application :**
-   ```bash
-    http://localhost:3000
-   ```
-
-# ------------------------------
-
-## Installation de l'application en mode **production**
-
-### Installation des modèles d'IA
-
-```bash
-ollama pull llama3
-ollama pull snowflake-arctic-embed
-```
-
-1. **Cloner le dépôt :**
-   ```bash
-   git clone https://github.com/Maxougit/POC_ADS.git
-   ```
-2. **Lancer le conteneur Docker :**
-   ```bash
-   cd POC_ADS
-   docker-compose up --build
    ```
 3. **Accéder à l'application :**
    ```bash
