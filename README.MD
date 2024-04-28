@@ -44,10 +44,11 @@ ollama pull snowflake-arctic-embed
    ```bash
     http://localhost:3000
    ```
-_Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
-_login:mdp **admin**:**admin**_
+   _Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
+   _login:mdp **admin**:**admin**_
 
 # ------------------------------
+
 ## Installation de l'application en mode **developpement**
 
 ### Installation des modèles d'IA
@@ -77,13 +78,16 @@ ollama pull snowflake-arctic-embed
 ### Ajuster les variables d'environnement pour le backend
 
 .env
+
 ```bash
 OLLAMA_HOST = 'http://localhost:11434'
 MODE = 'dev'
 ```
 
 ### Ajuster les variables d'environnement pour le frontend
+
 .env.local
+
 ```bash
 API_URL=http://localhost:11434/api/
 RAG_URL=http://127.0.0.1:5001/
@@ -121,6 +125,10 @@ _login:mdp **admin**:**admin**_
 ![Diagramme de séquence](p2.png)
 
 # ------------------------------
+
+## Tutoriel
+
+![Tutoriel](p3.png)
 
 ## Auteurs
 
