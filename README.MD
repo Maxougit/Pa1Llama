@@ -33,7 +33,7 @@ ollama pull snowflake-arctic-embed
 
 1. **Cloner le dépôt :**
    ```bash
-   git clone https://github.com/Maxougit/POC_ADS.git
+   git clone https://github.com/Maxougit/Pa1Llama.git
    ```
 2. **Lancer le conteneur Docker :**
    ```bash
@@ -44,10 +44,11 @@ ollama pull snowflake-arctic-embed
    ```bash
     http://localhost:3000
    ```
-_Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
-_login:mdp **admin**:**admin**_
+   _Note : Ajuster les varibles d'environnement au besoin dans les fichiers **.env**_
+   _login:mdp **admin**:**admin**_
 
 # ------------------------------
+
 ## Installation de l'application en mode **developpement**
 
 ### Installation des modèles d'IA
@@ -59,7 +60,7 @@ ollama pull snowflake-arctic-embed
 
 1. **Cloner le dépôt :**
    ```bash
-   git clone https://github.com/Maxougit/POC_ADS.git
+   git clone https://github.com/Maxougit/Pa1Llama.git
    ```
 2. **Installer les dépendances pour le backend :**
    ```bash
@@ -77,13 +78,16 @@ ollama pull snowflake-arctic-embed
 ### Ajuster les variables d'environnement pour le backend
 
 .env
+
 ```bash
 OLLAMA_HOST = 'http://localhost:11434'
 MODE = 'dev'
 ```
 
 ### Ajuster les variables d'environnement pour le frontend
+
 .env.local
+
 ```bash
 API_URL=http://localhost:11434/api/
 RAG_URL=http://127.0.0.1:5001/
