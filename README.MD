@@ -37,7 +37,7 @@ ollama pull snowflake-arctic-embed
    ```
 2. **Lancer le conteneur Docker :**
    ```bash
-   cd POC_ADS
+   cd Pa1Llama
    docker-compose up --build
    ```
 3. **Accéder à l'application :**
@@ -64,7 +64,7 @@ ollama pull snowflake-arctic-embed
    ```
 2. **Installer les dépendances pour le backend :**
    ```bash
-   cd POC_ADS
+   cd Pa1Llama
    python3 -m venv venv ou python -m venv venv
    source venv/bin/activate # ou .\venv\Scripts\activate.bat
    pip install -r requirements.txt
@@ -98,7 +98,7 @@ RAG_URL=http://127.0.0.1:5001/
 1. **Démarrer le backend :**
 
    ```bash
-   cd POC_ADS
+   cd Pa1Llama
    source venv/bin/activate # ou venv\Scripts\activate
    python main.py
    ```
