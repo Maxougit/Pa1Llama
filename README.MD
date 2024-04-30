@@ -65,7 +65,7 @@ ollama pull snowflake-arctic-embed
 2. **Installer les dépendances pour le backend :**
    ```bash
    cd Pa1Llama
-   python3 -m venv venv ou python -m venv venv
+   python3 -m venv venv # ou python -m venv venv
    source venv/bin/activate # ou .\venv\Scripts\activate.bat
    pip install -r requirements.txt
    ```
