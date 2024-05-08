@@ -21,7 +21,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/app/files' if os.getenv('MODE') == 'prod' else './files'
 CORS(app, resources={r"/*": {"origins": "*"}})  # Adjust in production
 
-# Generate a secure random secret key for JWT
+# Generate a secure random secret key for JWT 
 app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
 jwt = JWTManager(app)
 
@@ -107,11 +107,13 @@ def load_and_index_pdfs(pdf_files, username, key):
             collection.add(ids=[pdf_file + hash_chunk(chunk)], embeddings=[embedding], documents=[encrypt_text(chunk, key)])
 
 
-def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, threshold_limit=380):
+def retrieve_documents(prompt, username, n_results=3, threshold_ratio=1.25, threshold_limit=500):
     collection = app.config[f"{username}_collection"]  # Access the correct collection
     response = client.embeddings(model="snowflake-arctic-embed", prompt=prompt)
     query_embedding = response["embedding"]
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
+
+    print(results)
     
     # Check if the results list is empty
     if not results['distances']:
